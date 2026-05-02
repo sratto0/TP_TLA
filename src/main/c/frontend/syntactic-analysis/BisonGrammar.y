@@ -3,6 +3,7 @@
 #include "../../support/type/TokenLabel.h"
 #include "AbstractSyntaxTree.h"
 #include "BisonActions.h"
+#include <stdlib.h>
 
 /**
  * The error reporting function for Bison parser.
@@ -27,13 +28,11 @@ void yyerror(const YYLTYPE * location, const char * message) {}
 	/** Terminals. */
 
 	signed int integer;
+	char * string;
 	TokenLabel token;
 
 	/** Non-terminals. */
 
-	Constant * constant;
-	Expression * expression;
-	Factor * factor;
 	Program * program;
 }
 
@@ -45,60 +44,104 @@ void yyerror(const YYLTYPE * location, const char * message) {}
  *
  * @see https://www.gnu.org/software/bison/manual/html_node/Destructor-Decl.html
  */
-%destructor { destroyConstant($$); } <constant>
-%destructor { destroyExpression($$); } <expression>
-%destructor { destroyFactor($$); } <factor>
+%destructor { free($$); } <string>
 
 /** Terminals. */
+%token <token> ASSIGN
+%token <token> AT
+%token <token> AVAILABLE
+%token <token> BLOCKED
+%token <token> CAPACITY
+%token <token> COLON
+%token <token> COURSE
+%token <token> DASH
+%token <token> FRIDAY
+%token <token> IN
 %token <integer> INTEGER
-%token <token> ADD
-%token <token> CLOSE_BRACE
-%token <token> CLOSE_COMMENT
-%token <token> CLOSE_PARENTHESIS
-%token <token> DIV
-%token <token> MUL
-%token <token> OPEN_BRACE
-%token <token> OPEN_COMMENT
-%token <token> OPEN_PARENTHESIS
-%token <token> SUB
+%token <token> MONDAY
+%token <token> OF
+%token <token> PRINT
+%token <token> ROOM
+%token <token> SATURDAY
+%token <token> SCHEDULE
+%token <token> SECTION
+%token <token> SEMICOLON
+%token <token> STUDENTS
+%token <string> STRING
+%token <token> SUNDAY
+%token <token> TEACHER
+%token <token> THURSDAY
+%token <token> TO
+%token <token> TUESDAY
+%token <token> WEDNESDAY
 
 %token <token> IGNORED
 %token <token> UNKNOWN
 
 /** Non-terminals. */
-%type <constant> constant
-%type <expression> expression
-%type <factor> factor
 %type <program> program
-
-/**
- * Precedence and associativity.
- *
- * @see https://en.cppreference.com/w/cpp/language/operator_precedence.html
- * @see https://www.gnu.org/software/bison/manual/html_node/Precedence.html
- */
-%left ADD SUB
-%left MUL DIV
 
 %%
 
 // IMPORTANT: To use λ in the following grammar, use the %empty symbol.
 
-program: expression											{ $$ = ExpressionProgramSemanticAction($1); }
+program: statement_list										{ $$ = EmptyProgramSemanticAction(); }
 	;
 
-expression: expression[left] ADD expression[right]			{ $$ = ArithmeticExpressionSemanticAction($left, $right, ADDITION); }
-	| expression[left] DIV expression[right]				{ $$ = ArithmeticExpressionSemanticAction($left, $right, DIVISION); }
-	| expression[left] MUL expression[right]				{ $$ = ArithmeticExpressionSemanticAction($left, $right, MULTIPLICATION); }
-	| expression[left] SUB expression[right]				{ $$ = ArithmeticExpressionSemanticAction($left, $right, SUBTRACTION); }
-	| factor												{ $$ = FactorExpressionSemanticAction($1); }
+statement_list: statement									{ }
+	| statement_list statement								{ }
 	;
 
-factor: OPEN_PARENTHESIS expression CLOSE_PARENTHESIS		{ $$ = ExpressionFactorSemanticAction($2); }
-	| constant												{ $$ = ConstantFactorSemanticAction($1); }
+statement: teacher_declaration								{ }
+	| room_declaration										{ }
+	| course_declaration									{ }
+	| section_declaration									{ }
+	| availability_declaration								{ }
+	| blocked_declaration									{ }
+	| assignment											{ }
+	| print_statement										{ }
 	;
 
-constant: INTEGER											{ $$ = IntegerConstantSemanticAction($1); }
+teacher_declaration: TEACHER string_literal SEMICOLON		{ }
+	;
+
+room_declaration: ROOM string_literal CAPACITY INTEGER SEMICOLON	{ }
+	;
+
+course_declaration: COURSE string_literal STUDENTS INTEGER SEMICOLON	{ }
+	;
+
+section_declaration: SECTION string_literal OF string_literal SEMICOLON	{ }
+	;
+
+availability_declaration: AVAILABLE string_literal day time_range SEMICOLON	{ }
+	;
+
+blocked_declaration: BLOCKED string_literal day time_range SEMICOLON	{ }
+	;
+
+assignment: ASSIGN string_literal TO string_literal IN string_literal AT day time_range SEMICOLON	{ }
+	;
+
+print_statement: PRINT SCHEDULE SEMICOLON					{ }
+	;
+
+day: MONDAY													{ }
+	| TUESDAY												{ }
+	| WEDNESDAY												{ }
+	| THURSDAY												{ }
+	| FRIDAY												{ }
+	| SATURDAY												{ }
+	| SUNDAY												{ }
+	;
+
+time_range: time DASH time									{ }
+	;
+
+time: INTEGER COLON INTEGER									{ }
+	;
+
+string_literal: STRING										{ free($1); }
 	;
 
 %%

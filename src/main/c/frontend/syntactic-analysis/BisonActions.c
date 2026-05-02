@@ -76,6 +76,13 @@ Factor * ExpressionFactorSemanticAction(Expression * expression) {
 	return factor;
 }
 
+Program * EmptyProgramSemanticAction() {
+	_logSyntacticAnalyzerAction(__FUNCTION__);
+	Program * program = calloc(1, sizeof(Program));
+	_compilerState->abstractSyntaxtTree = program;
+	return program;
+}
+
 Program * ExpressionProgramSemanticAction(Expression * expression) {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
 	Program * program = calloc(1, sizeof(Program));

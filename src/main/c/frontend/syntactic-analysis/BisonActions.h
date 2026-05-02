@@ -21,6 +21,7 @@ Expression * ArithmeticExpressionSemanticAction(Expression * leftExpression, Exp
 Expression * FactorExpressionSemanticAction(Factor * factor);
 Factor * ConstantFactorSemanticAction(Constant * constant);
 Factor * ExpressionFactorSemanticAction(Expression * expression);
+Program * EmptyProgramSemanticAction();
 Program * ExpressionProgramSemanticAction(Expression * expression);
 
 #endif
