@@ -15,4 +15,15 @@
 /** Initialize module's internal state. */
 ModuleDestructor initializeFlexActionsModule();
 
+/**
+ * Flex semantic actions.
+ */
+
+CompilationStatus EOFLexemeAction();
+CompilationStatus IgnoredLexemeAction();
+CompilationStatus IntegerLexemeAction();
+CompilationStatus KeywordLexemeAction(TokenLabel label);
+CompilationStatus StringLexemeAction();
+CompilationStatus UnknownLexemeAction();
+
 #endif

@@ -14,27 +14,14 @@
  * @see https://westes.github.io/flex/manual/Definitions-Section.html#Definitions-Section
  */
 
-extern CompilationStatus ArithmeticOperatorLexemeAction(TokenLabel label);
-extern CompilationStatus EnterImportExpressionLexemeAction(FlexContext context);
-extern CompilationStatus EnterMultilineCommentLexemeAction(FlexContext context);
 extern CompilationStatus EOFLexemeAction();
 extern CompilationStatus IgnoredLexemeAction();
 extern CompilationStatus IntegerLexemeAction();
-extern CompilationStatus LeaveImportExpressionLexemeAction();
-extern CompilationStatus LeaveMultilineCommentLexemeAction();
-extern CompilationStatus ParenthesisLexemeAction(TokenLabel label);
-extern CompilationStatus SubexpressionLexemeAction();
+extern CompilationStatus KeywordLexemeAction(TokenLabel label);
+extern CompilationStatus StringLexemeAction();
 extern CompilationStatus UnknownLexemeAction();
 
 %}
-
-/**
- * Flex contexts (a.k.a. start conditions).
- *
- * @see https://westes.github.io/flex/manual/Start-Conditions.html
- */
-%x IMPORT_EXPRESSION
-%x MULTILINE_COMMENT
 
 /**
  * Reusable patterns.
@@ -43,6 +30,9 @@ extern CompilationStatus UnknownLexemeAction();
  * @see https://westes.github.io/flex/manual/Patterns.html
  */
 whitespace			[[:space:]]+
+integer				[0-9]+
+identifier			[[:alpha:]_][[:alnum:]_]*
+string				\"([^\"\\]|\\.)*\"
 
 %%
 
@@ -54,27 +44,41 @@ whitespace			[[:space:]]+
 
 %}
 
-"{"									{ return EnterImportExpressionLexemeAction(IMPORT_EXPRESSION); }
-<IMPORT_EXPRESSION>[^{}]+			{ return SubexpressionLexemeAction(); }
-<IMPORT_EXPRESSION>"}"				{ return LeaveImportExpressionLexemeAction(); }
-<IMPORT_EXPRESSION>.				{ return UnknownLexemeAction(); }
+"//"[^\n]*							{ return IgnoredLexemeAction(); }
 
-"/*"								{ return EnterMultilineCommentLexemeAction(MULTILINE_COMMENT); }
-<MULTILINE_COMMENT>"*/"				{ return LeaveMultilineCommentLexemeAction(); }
-<MULTILINE_COMMENT>[^*]+			{ return IgnoredLexemeAction(); }
-<MULTILINE_COMMENT>.				{ return IgnoredLexemeAction(); }
+"teacher"							{ return KeywordLexemeAction(TEACHER); }
+"room"								{ return KeywordLexemeAction(ROOM); }
+"capacity"							{ return KeywordLexemeAction(CAPACITY); }
+"course"							{ return KeywordLexemeAction(COURSE); }
+"students"							{ return KeywordLexemeAction(STUDENTS); }
+"section"							{ return KeywordLexemeAction(SECTION); }
+"of"								{ return KeywordLexemeAction(OF); }
+"available"						{ return KeywordLexemeAction(AVAILABLE); }
+"blocked"							{ return KeywordLexemeAction(BLOCKED); }
+"assign"							{ return KeywordLexemeAction(ASSIGN); }
+"to"								{ return KeywordLexemeAction(TO); }
+"in"								{ return KeywordLexemeAction(IN); }
+"at"								{ return KeywordLexemeAction(AT); }
+"print"								{ return KeywordLexemeAction(PRINT); }
+"schedule"							{ return KeywordLexemeAction(SCHEDULE); }
 
-"-"									{ return ArithmeticOperatorLexemeAction(SUB); }
-"*"									{ return ArithmeticOperatorLexemeAction(MUL); }
-"/"									{ return ArithmeticOperatorLexemeAction(DIV); }
-"+"									{ return ArithmeticOperatorLexemeAction(ADD); }
+"monday"							{ return KeywordLexemeAction(MONDAY); }
+"tuesday"							{ return KeywordLexemeAction(TUESDAY); }
+"wednesday"							{ return KeywordLexemeAction(WEDNESDAY); }
+"thursday"							{ return KeywordLexemeAction(THURSDAY); }
+"friday"							{ return KeywordLexemeAction(FRIDAY); }
+"saturday"							{ return KeywordLexemeAction(SATURDAY); }
+"sunday"							{ return KeywordLexemeAction(SUNDAY); }
 
-"("									{ return ParenthesisLexemeAction(OPEN_PARENTHESIS); }
-")"									{ return ParenthesisLexemeAction(CLOSE_PARENTHESIS); }
+";"									{ return KeywordLexemeAction(SEMICOLON); }
+":"									{ return KeywordLexemeAction(COLON); }
+"-"									{ return KeywordLexemeAction(DASH); }
 
-[[:digit:]]+						{ return IntegerLexemeAction(); }
+{integer}							{ return IntegerLexemeAction(); }
+{string}							{ return StringLexemeAction(); }
 
 {whitespace}						{ return IgnoredLexemeAction(); }
+{identifier}						{ return UnknownLexemeAction(); }
 .									{ return UnknownLexemeAction(); }
 
 <<EOF>>								{ return EOFLexemeAction(); }
