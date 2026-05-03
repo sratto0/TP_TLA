@@ -16,11 +16,17 @@ ModuleDestructor initializeAbstractSyntaxTreeModule();
 
 typedef enum ExpressionType ExpressionType;
 typedef enum FactorType FactorType;
+typedef enum Day Day;
+typedef enum StatementType StatementType;
 
 typedef struct Constant Constant;
 typedef struct Expression Expression;
 typedef struct Factor Factor;
 typedef struct Program Program;
+typedef struct Statement Statement;
+typedef struct StatementList StatementList;
+typedef struct Time Time;
+typedef struct TimeRange TimeRange;
 
 /**
  * Node types for the Abstract Syntax Tree (AST).
@@ -37,6 +43,27 @@ enum ExpressionType {
 enum FactorType {
 	CONSTANT,
 	EXPRESSION
+};
+
+enum Day {
+	DAY_MONDAY,
+	DAY_TUESDAY,
+	DAY_WEDNESDAY,
+	DAY_THURSDAY,
+	DAY_FRIDAY,
+	DAY_SATURDAY,
+	DAY_SUNDAY
+};
+
+enum StatementType {
+	ASSIGNMENT_STATEMENT,
+	AVAILABILITY_STATEMENT,
+	BLOCKED_STATEMENT,
+	COURSE_STATEMENT,
+	PRINT_STATEMENT,
+	ROOM_STATEMENT,
+	SECTION_STATEMENT,
+	TEACHER_STATEMENT
 };
 
 struct Constant {
@@ -62,7 +89,60 @@ struct Expression {
 	ExpressionType type;
 };
 
+struct Time {
+	int hour;
+	int minute;
+};
+
+struct TimeRange {
+	Time * start;
+	Time * end;
+};
+
+struct Statement {
+	union {
+		struct {
+			char * sectionName;
+			char * teacherName;
+			char * roomName;
+			Day day;
+			TimeRange * timeRange;
+		} assignment;
+		struct {
+			char * teacherName;
+			Day day;
+			TimeRange * timeRange;
+		} availability;
+		struct {
+			char * name;
+			int students;
+		} course;
+		struct {
+			char * name;
+			int capacity;
+		} room;
+		struct {
+			char * name;
+			char * courseName;
+		} section;
+		struct {
+			char * name;
+		} teacher;
+	};
+	StatementType type;
+};
+
+struct StatementList {
+	Statement * statement;
+	StatementList * next;
+};
+
 struct Program {
+	StatementList * statements;
+
+	/**
+	 * Legacy calculator field kept while the backend is replaced by SchedLang.
+	 */
 	Expression * expression;
 };
 
@@ -74,5 +154,9 @@ void destroyConstant(Constant * constant);
 void destroyExpression(Expression * expression);
 void destroyFactor(Factor * factor);
 void destroyProgram(Program * program);
+void destroyStatement(Statement * statement);
+void destroyStatementList(StatementList * statementList);
+void destroyTime(Time * time);
+void destroyTimeRange(TimeRange * timeRange);
 
 #endif

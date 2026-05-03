@@ -64,7 +64,69 @@ void destroyFactor(Factor * factor) {
 void destroyProgram(Program * program) {
 	logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
 	if (program != NULL) {
+		destroyStatementList(program->statements);
 		destroyExpression(program->expression);
 		free(program);
+	}
+}
+
+void destroyStatement(Statement * statement) {
+	logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
+	if (statement != NULL) {
+		switch (statement->type) {
+			case ASSIGNMENT_STATEMENT:
+				free(statement->assignment.sectionName);
+				free(statement->assignment.teacherName);
+				free(statement->assignment.roomName);
+				destroyTimeRange(statement->assignment.timeRange);
+				break;
+			case AVAILABILITY_STATEMENT:
+			case BLOCKED_STATEMENT:
+				free(statement->availability.teacherName);
+				destroyTimeRange(statement->availability.timeRange);
+				break;
+			case COURSE_STATEMENT:
+				free(statement->course.name);
+				break;
+			case PRINT_STATEMENT:
+				break;
+			case ROOM_STATEMENT:
+				free(statement->room.name);
+				break;
+			case SECTION_STATEMENT:
+				free(statement->section.name);
+				free(statement->section.courseName);
+				break;
+			case TEACHER_STATEMENT:
+				free(statement->teacher.name);
+				break;
+		}
+		free(statement);
+	}
+}
+
+void destroyStatementList(StatementList * statementList) {
+	logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
+	while (statementList != NULL) {
+		StatementList * next = statementList->next;
+		destroyStatement(statementList->statement);
+		free(statementList);
+		statementList = next;
+	}
+}
+
+void destroyTime(Time * time) {
+	logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
+	if (time != NULL) {
+		free(time);
+	}
+}
+
+void destroyTimeRange(TimeRange * timeRange) {
+	logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
+	if (timeRange != NULL) {
+		destroyTime(timeRange->start);
+		destroyTime(timeRange->end);
+		free(timeRange);
 	}
 }

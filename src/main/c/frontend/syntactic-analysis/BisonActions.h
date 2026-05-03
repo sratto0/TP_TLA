@@ -24,4 +24,19 @@ Factor * ExpressionFactorSemanticAction(Expression * expression);
 Program * EmptyProgramSemanticAction();
 Program * ExpressionProgramSemanticAction(Expression * expression);
 
+Day DaySemanticAction(Day day);
+Program * StatementListProgramSemanticAction(StatementList * statementList);
+StatementList * SingleStatementListSemanticAction(Statement * statement);
+StatementList * AppendStatementListSemanticAction(StatementList * statementList, Statement * statement);
+Statement * AssignmentStatementSemanticAction(char * sectionName, char * teacherName, char * roomName, Day day, TimeRange * timeRange);
+Statement * AvailabilityStatementSemanticAction(char * teacherName, Day day, TimeRange * timeRange);
+Statement * BlockedStatementSemanticAction(char * teacherName, Day day, TimeRange * timeRange);
+Statement * CourseStatementSemanticAction(char * name, int students);
+Statement * PrintStatementSemanticAction();
+Statement * RoomStatementSemanticAction(char * name, int capacity);
+Statement * SectionStatementSemanticAction(char * name, char * courseName);
+Statement * TeacherStatementSemanticAction(char * name);
+Time * TimeSemanticAction(int hour, int minute);
+TimeRange * TimeRangeSemanticAction(Time * start, Time * end);
+
 #endif
