@@ -1,5 +1,6 @@
-#include "backend/code-generation/Generator.h"
-#include "backend/domain-specific/Calculator.h"
+#include "backend/code-generation/CodeGenerator.h"
+#include "backend/domain-specific/ScheduleModel.h"
+#include "backend/semantic-analysis/SemanticAnalyzer.h"
 #include "frontend/Frontend.h"
 #include "frontend/lexical-analysis/FlexActions.h"
 #include "frontend/syntactic-analysis/BisonActions.h"
@@ -21,25 +22,38 @@ const int main(const int length, const char ** arguments) {
 	}
 	CompilerState compilerState = {
 		.abstractSyntaxtTree = NULL,
-		.value = 0
+		.semanticModel = NULL
 	};
 	ModuleDestructor moduleDestructors[] = {
 		initializeAbstractSyntaxTreeModule(),
 		initializeFlexActionsModule(lexicalAnalyzer),
 		initializeBisonActionsModule(&compilerState),
 		initializeFrontendModule(lexicalAnalyzer),
-		initializeCalculatorModule(),
-		initializeGeneratorModule()
+		initializeSemanticAnalyzerModule(),
+		initializeCodeGeneratorModule()
 	};
 	CompilationStatus compilationStatus = executeSyntacticAnalysis();
 	Program * program = compilerState.abstractSyntaxtTree;
 	if (compilationStatus == SUCCEEDED) {
-		logInformation(logger, "The frontend accepts the input program. Backend is pending for SchedLang.");
+		compilationStatus = executeSemanticAnalysis(&compilerState);
+		if (compilationStatus == SUCCEEDED) {
+			compilationStatus = executeCodeGenerator(&compilerState);
+			if (compilationStatus == SUCCEEDED) {
+				logInformation(logger, "The compiler accepts the input program.");
+			}
+			else {
+				logError(logger, "The code-generation phase failed.");
+			}
+		}
+		else {
+			logError(logger, "The semantic-analysis phase rejects the input program.");
+		}
 	}
 	else {
 		logError(logger, "The syntactic-analysis phase rejects the input program.");
 		compilationStatus = FAILED;
 	}
+	destroyScheduleModel(compilerState.semanticModel);
 	logDebugging(logger, "Releasing AST resources...");
 	destroyProgram(program);
 	for (int k = (sizeof(moduleDestructors)/sizeof(ModuleDestructor)) - 1; 0 <= k; --k) {

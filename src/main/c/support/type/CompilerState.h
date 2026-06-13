@@ -12,17 +12,10 @@ typedef struct {
 	void * abstractSyntaxtTree;
 
 	/**
-	 * The computed value of the entire program (only for the calculator). You
-	 * should change or remove this field, or a random child will die, and it
-	 * will be your fault.
+	 * Backend model produced by semantic analysis.
 	 */
-	signed int value;
+	void * semanticModel;
 
-	// TODO: Add a symbol table.
-	// TODO: Add an stack to handle nested scopes.
-	// TODO: Add more configuration.
-	// TODO: Add whatever you need.
-	// TODO: ...
 } CompilerState;
 
 #endif
