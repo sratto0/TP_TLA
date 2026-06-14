@@ -1,0 +1,5 @@
+<!DOCTYPE html>
+<title>SchedLang Schedule</title>
+<span class="stat-value">0</span><span class="stat-label">Assignments</span>
+<tr><td class="empty" colspan="7">No assignments were defined for this schedule.</td></tr>
+</html>

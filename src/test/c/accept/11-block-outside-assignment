@@ -2,5 +2,6 @@ teacher "Perez";
 room "A101" capacity 40;
 course "Automatas" students 35;
 section "Automatas-1" of "Automatas";
-available "Perez" monday 08:00-10:00;
+available "Perez" monday 08:00-12:00;
+blocked "Perez" monday 10:00-11:00;
 assign "Automatas-1" to "Perez" in "A101" at monday 08:00-10:00;

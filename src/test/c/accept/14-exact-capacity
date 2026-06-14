@@ -1,5 +1,5 @@
 teacher "Perez";
-room "A101" capacity 40;
+room "A101" capacity 35;
 course "Automatas" students 35;
 section "Automatas-1" of "Automatas";
 available "Perez" monday 08:00-10:00;

@@ -3,4 +3,5 @@ room "A101" capacity 40;
 course "Automatas" students 35;
 section "Automatas-1" of "Automatas";
 available "Perez" monday 08:00-10:00;
-assign "Automatas-1" to "Perez" in "A101" at monday 08:00-10:00;
+available "Perez" wednesday 14:00-16:00;
+assign "Automatas-1" to "Perez" in "A101" at wednesday 14:00-16:00;

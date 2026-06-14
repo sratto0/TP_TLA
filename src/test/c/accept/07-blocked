@@ -1,2 +1,3 @@
 // Faculty meeting.
+teacher "Gomez";
 blocked "Gomez" friday 12:00-13:30;

@@ -1,6 +1,11 @@
 teacher "Perez";
+teacher "Gomez";
 room "A101" capacity 40;
 course "Automatas" students 35;
+course "Compiladores" students 30;
 section "Automatas-1" of "Automatas";
+section "Compiladores-1" of "Compiladores";
 available "Perez" monday 08:00-10:00;
+available "Gomez" monday 10:00-12:00;
 assign "Automatas-1" to "Perez" in "A101" at monday 08:00-10:00;
+assign "Compiladores-1" to "Gomez" in "A101" at monday 10:00-12:00;

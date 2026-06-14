@@ -1,0 +1,7 @@
+teacher "Perez & Asociados";
+room "Lab <A>" capacity 40;
+course "TLA & Web" students 35;
+section "TLA <1>" of "TLA & Web";
+available "Perez & Asociados" monday 08:00-10:00;
+assign "TLA <1>" to "Perez & Asociados" in "Lab <A>" at monday 08:00-10:00;
+print schedule;
