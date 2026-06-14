@@ -53,6 +53,7 @@
 *.yaml text eol=lf
 *.yml text eol=lf
 Dockerfile text eol=lf
+src/test/c/**/* text eol=lf
 
 # Binary formats.
 *.bmp binary
