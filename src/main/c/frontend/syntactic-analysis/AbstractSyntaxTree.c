@@ -5,7 +5,7 @@
 static Logger * _logger = NULL;
 
 /** Shutdown module's internal state. */
-void _shutdownAbstractSyntaxTreeModule() {
+void _shutdownAbstractSyntaxTreeModule(void) {
 	if (_logger != NULL) {
 		logDebugging(_logger, "Destroying module: AbstractSyntaxTree...");
 		destroyLogger(_logger);
@@ -13,7 +13,7 @@ void _shutdownAbstractSyntaxTreeModule() {
 	}
 }
 
-ModuleDestructor initializeAbstractSyntaxTreeModule() {
+ModuleDestructor initializeAbstractSyntaxTreeModule(void) {
 	_logger = createLogger("AbstractSyntaxTree");
 	return _shutdownAbstractSyntaxTreeModule;
 }

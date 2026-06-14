@@ -6,7 +6,7 @@ static CompilerState * _compilerState = NULL;
 static Logger * _logger = NULL;
 
 /** Shutdown module's internal state. */
-void _shutdownBisonActionsModule() {
+void _shutdownBisonActionsModule(void) {
 	if (_logger != NULL) {
 		logDebugging(_logger, "Destroying module: BisonActions...");
 		destroyLogger(_logger);
@@ -86,7 +86,7 @@ Factor * ExpressionFactorSemanticAction(Expression * expression) {
 	return factor;
 }
 
-Program * EmptyProgramSemanticAction() {
+Program * EmptyProgramSemanticAction(void) {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
 	Program * program = calloc(1, sizeof(Program));
 	_compilerState->abstractSyntaxtTree = program;
@@ -169,7 +169,7 @@ Statement * CourseStatementSemanticAction(char * name, int students) {
 	return statement;
 }
 
-Statement * PrintStatementSemanticAction() {
+Statement * PrintStatementSemanticAction(void) {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
 	return _createStatement(PRINT_STATEMENT);
 }

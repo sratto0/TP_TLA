@@ -10,7 +10,7 @@
 #include <stdlib.h>
 
 /** Initialize module's internal state. */
-ModuleDestructor initializeBisonActionsModule();
+ModuleDestructor initializeBisonActionsModule(CompilerState * compilerState);
 
 /**
  * Bison semantic actions.
@@ -21,7 +21,7 @@ Expression * ArithmeticExpressionSemanticAction(Expression * leftExpression, Exp
 Expression * FactorExpressionSemanticAction(Factor * factor);
 Factor * ConstantFactorSemanticAction(Constant * constant);
 Factor * ExpressionFactorSemanticAction(Expression * expression);
-Program * EmptyProgramSemanticAction();
+Program * EmptyProgramSemanticAction(void);
 Program * ExpressionProgramSemanticAction(Expression * expression);
 
 Day DaySemanticAction(Day day);
@@ -32,7 +32,7 @@ Statement * AssignmentStatementSemanticAction(char * sectionName, char * teacher
 Statement * AvailabilityStatementSemanticAction(char * teacherName, Day day, TimeRange * timeRange);
 Statement * BlockedStatementSemanticAction(char * teacherName, Day day, TimeRange * timeRange);
 Statement * CourseStatementSemanticAction(char * name, int students);
-Statement * PrintStatementSemanticAction();
+Statement * PrintStatementSemanticAction(void);
 Statement * RoomStatementSemanticAction(char * name, int capacity);
 Statement * SectionStatementSemanticAction(char * name, char * courseName);
 Statement * TeacherStatementSemanticAction(char * name);

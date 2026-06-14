@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 /** Initialize module's internal state. */
-ModuleDestructor initializeAbstractSyntaxTreeModule();
+ModuleDestructor initializeAbstractSyntaxTreeModule(void);
 
 /**
  * This type definitions allows self-referencing types (e.g., an expression
