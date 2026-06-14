@@ -32,26 +32,33 @@ const int main(const int length, const char ** arguments) {
 		initializeSemanticAnalyzerModule(),
 		initializeCodeGeneratorModule()
 	};
-	CompilationStatus compilationStatus = executeSyntacticAnalysis();
-	Program * program = compilerState.abstractSyntaxtTree;
+	CompilationStatus compilationStatus = clearGeneratedOutput();
+	Program * program = NULL;
 	if (compilationStatus == SUCCEEDED) {
-		compilationStatus = executeSemanticAnalysis(&compilerState);
+		compilationStatus = executeSyntacticAnalysis();
+		program = compilerState.abstractSyntaxtTree;
 		if (compilationStatus == SUCCEEDED) {
-			compilationStatus = executeCodeGenerator(&compilerState);
+			compilationStatus = executeSemanticAnalysis(&compilerState);
 			if (compilationStatus == SUCCEEDED) {
-				logInformation(logger, "The compiler accepts the input program.");
+				compilationStatus = executeCodeGenerator(&compilerState);
+				if (compilationStatus == SUCCEEDED) {
+					logInformation(logger, "The compiler accepts the input program.");
+				}
+				else {
+					logError(logger, "The code-generation phase failed.");
+				}
 			}
 			else {
-				logError(logger, "The code-generation phase failed.");
+				logError(logger, "The semantic-analysis phase rejects the input program.");
 			}
 		}
 		else {
-			logError(logger, "The semantic-analysis phase rejects the input program.");
+			logError(logger, "The syntactic-analysis phase rejects the input program.");
+			compilationStatus = FAILED;
 		}
 	}
 	else {
-		logError(logger, "The syntactic-analysis phase rejects the input program.");
-		compilationStatus = FAILED;
+		logError(logger, "The compiler cannot prepare the generated output.");
 	}
 	destroyScheduleModel(compilerState.semanticModel);
 	logDebugging(logger, "Releasing AST resources...");
