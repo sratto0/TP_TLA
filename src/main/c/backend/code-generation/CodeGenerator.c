@@ -1,7 +1,9 @@
 #include "CodeGenerator.h"
 #include "../domain-specific/ScheduleModel.h"
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 static Logger * _logger = NULL;
 static const char * _outputPath = "schedule.html";
@@ -74,6 +76,14 @@ static void _shutdownCodeGeneratorModule(void) {
 ModuleDestructor initializeCodeGeneratorModule(void) {
 	_logger = createLogger("CodeGenerator");
 	return _shutdownCodeGeneratorModule;
+}
+
+CompilationStatus clearGeneratedOutput(void) {
+	if (remove(_outputPath) == 0 || errno == ENOENT) {
+		return SUCCEEDED;
+	}
+	logError(_logger, "Cannot remove previous generated artifact %s: %s.", _outputPath, strerror(errno));
+	return FAILED;
 }
 
 CompilationStatus executeCodeGenerator(CompilerState * compilerState) {

@@ -13,17 +13,17 @@
 #include "../Frontend.h"
 
 /** Initialize module's internal state. */
-ModuleDestructor initializeFlexActionsModule();
+ModuleDestructor initializeFlexActionsModule(LexicalAnalyzer * lexicalAnalyzer);
 
 /**
  * Flex semantic actions.
  */
 
-CompilationStatus EOFLexemeAction();
-CompilationStatus IgnoredLexemeAction();
-CompilationStatus IntegerLexemeAction();
+CompilationStatus EOFLexemeAction(void);
+CompilationStatus IgnoredLexemeAction(void);
+CompilationStatus IntegerLexemeAction(void);
 CompilationStatus KeywordLexemeAction(TokenLabel label);
-CompilationStatus StringLexemeAction();
-CompilationStatus UnknownLexemeAction();
+CompilationStatus StringLexemeAction(void);
+CompilationStatus UnknownLexemeAction(void);
 
 #endif

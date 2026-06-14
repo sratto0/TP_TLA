@@ -6,7 +6,7 @@ static LexicalAnalyzer * _lexicalAnalyzer = NULL;
 static Logger * _logger = NULL;
 
 /** Shutdown module's internal state. */
-void _shutdownFrontendModule() {
+void _shutdownFrontendModule(void) {
 	if (_logger != NULL) {
 		logDebugging(_logger, "Destroying module: Frontend...");
 		destroyLogger(_logger);
@@ -56,7 +56,7 @@ InputBuffer * createInputBuffer(LexicalAnalyzer * lexicalAnalyzer, const char * 
 	return inputBuffer;
 }
 
-LexicalAnalyzer * createLexicalAnalyzer() {
+LexicalAnalyzer * createLexicalAnalyzer(void) {
 	LexicalAnalyzer * lexicalAnalyzer = (LexicalAnalyzer *) calloc(1, sizeof(LexicalAnalyzer));
 	lexicalAnalyzer->location = calloc(1, sizeof(YYLTYPE));
 	lexicalAnalyzer->logger = createLogger("LexicalAnalyzer");
@@ -152,7 +152,7 @@ CompilationStatus executeLexicalAnalysis(LexicalAnalyzer * lexicalAnalyzer) {
 		lexicalAnalyzer->scanner);
 }
 
-CompilationStatus executeSyntacticAnalysis() {
+CompilationStatus executeSyntacticAnalysis(void) {
 	logDebugging(_logger, "Parsing...");
 	CompilationStatus status = IN_PROGRESS;
 	while (status == IN_PROGRESS) {

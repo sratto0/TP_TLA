@@ -29,7 +29,7 @@ InputBuffer * createInputBuffer(LexicalAnalyzer * lexicalAnalyzer, const char * 
  *
  * @see https://westes.github.io/flex/manual/Reentrant.html
  */
-LexicalAnalyzer * createLexicalAnalyzer();
+LexicalAnalyzer * createLexicalAnalyzer(void);
 
 /**
  * Creates a new token. You need to set the semantic-value after creation.
@@ -69,7 +69,7 @@ CompilationStatus executeLexicalAnalysis(LexicalAnalyzer * lexicalAnalyzer);
 /**
  * Starts parsing the input until it reaches the end or fails.
  */
-CompilationStatus executeSyntacticAnalysis();
+CompilationStatus executeSyntacticAnalysis(void);
 
 /**
  * Leaves the current nested lexical-analyzer context.

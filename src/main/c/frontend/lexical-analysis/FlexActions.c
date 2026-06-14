@@ -7,7 +7,7 @@ static LexicalAnalyzer * _lexicalAnalyzer = NULL;
 static Logger * _logger = NULL;
 
 /** Shutdown module's internal state. */
-void _shutdownFlexActionsModule() {
+void _shutdownFlexActionsModule(void) {
 	if (_logger != NULL) {
 		logDebugging(_logger, "Destroying module: FlexActions...");
 		destroyLogger(_logger);
@@ -26,7 +26,42 @@ ModuleDestructor initializeFlexActionsModule(LexicalAnalyzer * lexicalAnalyzer) 
 /* PRIVATE FUNCTIONS */
 
 static void _logTokenAction(const char * actionName, Token * token);
+static char * _decodeStringLiteral(const Token * token);
 static const char * _tokenLabelToString(TokenLabel label);
+
+static char * _decodeStringLiteral(const Token * token) {
+	const size_t contentLength = token->length - 2;
+	char * value = calloc(contentLength + 1, sizeof(char));
+	if (value == NULL) {
+		return NULL;
+	}
+
+	size_t outputIndex = 0;
+	for (size_t inputIndex = 1; inputIndex < token->length - 1; inputIndex++) {
+		char character = token->lexeme[inputIndex];
+		if (character == '\\') {
+			switch (token->lexeme[++inputIndex]) {
+				case '"':
+					character = '"';
+					break;
+				case '\\':
+					character = '\\';
+					break;
+				case 'n':
+					character = '\n';
+					break;
+				case 'r':
+					character = '\r';
+					break;
+				case 't':
+					character = '\t';
+					break;
+			}
+		}
+		value[outputIndex++] = character;
+	}
+	return value;
+}
 
 /**
  * Logs a lexical-analyzer action over a token in DEBUGGING level.
@@ -87,7 +122,7 @@ static const char * _tokenLabelToString(TokenLabel label) {
 
 /* PUBLIC FUNCTIONS */
 
-CompilationStatus EOFLexemeAction() {
+CompilationStatus EOFLexemeAction(void) {
 	CompilationStatus status = IN_PROGRESS;
 	Token * token = createToken(_lexicalAnalyzer, 0);
 	_logTokenAction(__FUNCTION__, token);
@@ -103,7 +138,7 @@ CompilationStatus EOFLexemeAction() {
 	return status;
 }
 
-CompilationStatus IgnoredLexemeAction() {
+CompilationStatus IgnoredLexemeAction(void) {
 	if (_logIgnoredLexemes) {
 		Token * token = createToken(_lexicalAnalyzer, IGNORED);
 		_logTokenAction(__FUNCTION__, token);
@@ -112,7 +147,7 @@ CompilationStatus IgnoredLexemeAction() {
 	return IN_PROGRESS;
 }
 
-CompilationStatus IntegerLexemeAction() {
+CompilationStatus IntegerLexemeAction(void) {
 	Token * token = createToken(_lexicalAnalyzer, INTEGER);
 	token->semanticValue->integer = atoi(token->lexeme);
 	_logTokenAction(__FUNCTION__, token);
@@ -129,15 +164,13 @@ CompilationStatus KeywordLexemeAction(TokenLabel label) {
 	return status;
 }
 
-CompilationStatus StringLexemeAction() {
+CompilationStatus StringLexemeAction(void) {
 	Token * token = createToken(_lexicalAnalyzer, STRING);
-	const int contentLength = token->length - 2;
-	char * value = calloc(contentLength + 1, sizeof(char));
+	char * value = _decodeStringLiteral(token);
 	if (value == NULL) {
 		destroyToken(token);
 		return FAILED;
 	}
-	strncpy(value, token->lexeme + 1, contentLength);
 	token->semanticValue->string = value;
 	_logTokenAction(__FUNCTION__, token);
 	CompilationStatus status = pushToken(_lexicalAnalyzer, token);
@@ -149,7 +182,7 @@ CompilationStatus StringLexemeAction() {
 	return status;
 }
 
-CompilationStatus UnknownLexemeAction() {
+CompilationStatus UnknownLexemeAction(void) {
 	Token * token = createToken(_lexicalAnalyzer, UNKNOWN);
 	_logTokenAction(__FUNCTION__, token);
 	destroyToken(token);

@@ -8,6 +8,7 @@
 
 ModuleDestructor initializeCodeGeneratorModule(void);
 
+CompilationStatus clearGeneratedOutput(void);
 CompilationStatus executeCodeGenerator(CompilerState * compilerState);
 
 #endif

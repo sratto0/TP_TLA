@@ -1,102 +1,106 @@
-[![✗](https://img.shields.io/badge/Release-v2.0.0-ffb600.svg?style=for-the-badge)](https://github.com/agustin-golmar/Flex-Bison-Compiler/releases)
+[![CI](https://github.com/sratto0/TP_TLA/actions/workflows/pipeline.yaml/badge.svg?branch=development)](https://github.com/sratto0/TP_TLA/actions/workflows/pipeline.yaml)
+[![Stage III](https://img.shields.io/badge/Proyecto-Stage%20III-2563eb.svg)](https://github.com/sratto0/TP_TLA)
 
-[![✗](https://github.com/agustin-golmar/Flex-Bison-Compiler/actions/workflows/pipeline.yaml/badge.svg?branch=production)](https://github.com/agustin-golmar/Flex-Bison-Compiler/actions/workflows/pipeline.yaml)
+# SchedLang
 
-# Flex-Bison-Compiler
+SchedLang es un lenguaje especifico de dominio para describir y validar
+cronogramas academicos. El compilador permite declarar docentes, aulas,
+materias, comisiones y restricciones horarias, comprobar la consistencia del
+cronograma y generar una visualizacion en formato HTML.
 
-A base compiler example, developed with Flex and Bison.
+El proyecto fue desarrollado en C a partir de
+[Flex-Bison-Compiler](https://github.com/agustin-golmar/Flex-Bison-Compiler),
+utilizando Flex para el analisis lexico y Bison para el analisis sintactico.
 
-* [Requirements](#requirements)
-* [Configuration](#configuration)
-* [Commands](#commands)
-* [CI/CD](#cicd)
-* [Recommended Extensions](#recommended-extensions)
+## Funcionalidades
 
-## Requirements
+- Declaracion de docentes, aulas, materias y comisiones.
+- Disponibilidad y franjas bloqueadas de docentes.
+- Asignacion de comisiones a docentes, aulas, dias y horarios.
+- Validacion de referencias y nombres duplicados.
+- Validacion de capacidades y cantidades de estudiantes.
+- Deteccion de superposiciones de docentes, aulas y comisiones.
+- Generacion de `schedule.html` mediante `print schedule;`.
 
-* [Docker v28.3.2](https://www.docker.com/)
+## Ejemplo
 
-## Configuration
+```text
+teacher "Perez";
 
-Set the following environment variables to control and configure the behaviour of the application:
+room "A101" capacity 40;
 
-| Name                  | Default | Description                                                                                                                                                           |
-| :-------------------- | :-----: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ENVIRONMENT`         | `Local` | The active environment name. The available environments are: `Local`, `Development` and `Production`.                                                                 |
-| `LOG_IGNORED_LEXEMES` | `true`  | When `true`, logs all of the ignored lexemes found with Flex at `DEBUGGING` level. To remove those logs from the console output set it to `false`.                    |
-| `LOGGING_LEVEL`       | `ALL`   | The minimum level to log in the console output. From lower to higher, the available levels are: `ALL`, `DEBUGGING`, `INFORMATION`, `WARNING`, `ERROR` and `CRITICAL`. |
+course "Automatas" students 35;
+section "Automatas-1" of "Automatas";
 
-_Docker Compose_ can read the variables from an `.env` file too (see `compose.yaml` file).
+available "Perez" monday 08:00-12:00;
 
-## Commands
+assign "Automatas-1" to "Perez" in "A101" at monday 08:00-10:00;
 
-### Start
+print schedule;
+```
 
-Rises an ephemeral container, ready to start development:
+La sentencia `print schedule;` genera el archivo `schedule.html` en el
+directorio actual. Si no se incluye esa sentencia, el programa puede ser
+validado correctamente sin producir un archivo de salida.
+
+## Requisitos
+
+- Docker 28 o posterior.
+- Docker Compose.
+
+El entorno de Docker instala las versiones necesarias de GCC, CMake, Flex,
+Bison y Make.
+
+## Uso
+
+Iniciar el entorno de desarrollo:
 
 ```bash
 docker compose run --rm compiler
 ```
 
-### Build
-
-Builds or rebuilds the entire compiler:
+Construir el compilador:
 
 ```bash
 src/main/bash/build.sh
 ```
 
-### Run
-
-Compiles a program:
+Compilar un programa:
 
 ```bash
-src/main/bash/run.sh <program>
+src/main/bash/run.sh <ruta-del-programa>
 ```
 
-where `<program>` is the path to the file that represents its entry-point.
-
-### Test
-
-Executes every available unit-test under `src/test/c` folder:
+Ejecutar todos los casos de prueba:
 
 ```bash
 src/main/bash/test.sh
 ```
 
-### Stop
+La suite incluye casos de aceptacion, rechazo semantico y sintactico,
+verificacion de fragmentos del HTML generado y comprobacion de que no se
+produzca una salida cuando falta `print schedule;`.
 
-Logout, destroy the ephemeral containers and shutdowns the cluster:
+## Configuracion
 
-```bash
-exit
-docker compose down
-```
+El comportamiento del compilador puede ajustarse mediante las siguientes
+variables de entorno:
 
-### Docker
+| Variable | Valor predeterminado | Descripcion |
+| :--- | :---: | :--- |
+| `ENVIRONMENT` | `Local` | Nombre del entorno activo. |
+| `LOG_IGNORED_LEXEMES` | `true` | Indica si se registran los lexemas ignorados. |
+| `LOGGING_LEVEL` | `ALL` | Nivel minimo de logging: `ALL`, `DEBUGGING`, `INFORMATION`, `WARNING`, `ERROR` o `CRITICAL`. |
 
-| Command                                 | Description                                             |
-| :-------------------------------------- | :------------------------------------------------------ |
-| `docker builder prune --all`            | Removes all builds and complete build cache.            |
-| `docker compose --progress=plain build` | Forces a build or rebuild of the images in the cluster. |
-| `docker image prune`                    | Removes all of the dangling images from Docker.         |
-| `docker network prune`                  | Removes unused networks from Docker.                    |
-| `docker volume prune`                   | Removes unused volumes from Docker.                     |
+## Alcance
 
-## CI/CD
+La version actual se concentra en la validacion de un cronograma definido por
+archivo. No realiza optimizacion automatica de horarios. Los schedules
+nombrados, los tipos de aula, la carga horaria de las materias y el limite
+diario de asignaciones por docente quedan planteados como futuras extensiones.
 
-To trigger an automatic integration on every push or PR (_Pull Request_), you must activate _GitHub Actions_ in the _Settings_ tab. Use the following configuration:
+## Integrantes
 
-| Key                                                        | Value                                               |
-| :--------------------------------------------------------- | :-------------------------------------------------- |
-| `Actions permissions`                                      | `Allow all actions and reusable workflows`          |
-| `Allow GitHub Actions to create and approve pull requests` | `false`                                             |
-| `Artifact and log retention`                               | `30 days`                                           |
-| `Fork pull request workflows from outside collaborators`   | `Require approval for all outside collaborators`    |
-| `Workflow permissions`                                     | `Read repository contents and packages permissions` |
-
-## Recommended Extensions
-
-* [C/C++](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools)
-* [CMake Tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools)
-* [Yash](https://marketplace.visualstudio.com/items?itemName=daohong-emilio.yash)
+- Sofia Ratto
+- Martina Nudel
+- Mateo Lopez Badias
