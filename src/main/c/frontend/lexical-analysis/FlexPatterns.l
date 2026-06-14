@@ -14,12 +14,12 @@
  * @see https://westes.github.io/flex/manual/Definitions-Section.html#Definitions-Section
  */
 
-extern CompilationStatus EOFLexemeAction();
-extern CompilationStatus IgnoredLexemeAction();
-extern CompilationStatus IntegerLexemeAction();
+extern CompilationStatus EOFLexemeAction(void);
+extern CompilationStatus IgnoredLexemeAction(void);
+extern CompilationStatus IntegerLexemeAction(void);
 extern CompilationStatus KeywordLexemeAction(TokenLabel label);
-extern CompilationStatus StringLexemeAction();
-extern CompilationStatus UnknownLexemeAction();
+extern CompilationStatus StringLexemeAction(void);
+extern CompilationStatus UnknownLexemeAction(void);
 
 %}
 
@@ -32,7 +32,7 @@ extern CompilationStatus UnknownLexemeAction();
 whitespace			[[:space:]]+
 integer				[0-9]+
 identifier			[[:alpha:]_][[:alnum:]_]*
-string				\"([^\"\\]|\\.)*\"
+string				\"([^\"\\]|\\[\"\\nrt])*\"
 
 %%
 
